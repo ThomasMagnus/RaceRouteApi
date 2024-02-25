@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  api:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    depends_on:
+      - db
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:PsqlDb=Host=db; Database=race_route; Username=postgres; Password=123456"
+    ports:
+      - 80:8080
+      - 443:443
+    networks:
+      - local
+  db:
+    image: postgres:16.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=race_route
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+    ports:
+      - '13100:5432'
+    volumes:
+      - psqldb:/var/lib/postgresql/data
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge
+
+volumes:
+  psqldb:
+    driver: local
